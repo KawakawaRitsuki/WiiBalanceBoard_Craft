@@ -1,36 +1,42 @@
 package com.kawakawaplanning.winecraft.wiimote;
 
-public class WiimoteButton {
+public class ButtonManager {
 	
-	private boolean A = false;
-	private boolean B = false;
-	private boolean left = false;
-	private boolean up = false;
-	private boolean down = false;
+	private boolean A     = false;
+	private boolean B     = false;
+	private boolean left  = false;
+	private boolean up    = false;
+	private boolean down  = false;
 	private boolean right = false;
-	private boolean home = false;
-	private boolean plus = false;
+	private boolean home  = false;
+	private boolean plus  = false;
 	private boolean minus = false;
-	private boolean b1 = false;
-	private boolean b2 = false;
-	private boolean Z = false;
-	private boolean C = false;
+	private boolean b1    = false;
+	private boolean b2    = false;
+	private boolean Z     = false;
+	private boolean C     = false;
+	private boolean power = false;
 	
-	public static final int BUTTON_A = 0;
-	public static final int BUTTON_B = 1;
-	public static final int BUTTON_LEFT = 2;
-	public static final int BUTTON_UP = 3;
-	public static final int BUTTON_DOWN = 4;
-	public static final int BUTTON_RIGHT = 5;
-	public static final int BUTTON_HOME = 6;
-	public static final int BUTTON_PLUS = 7;
-	public static final int BUTTON_MINUS = 8;
-	public static final int BUTTON_1 = 9;
-	public static final int BUTTON_2 = 10;
-	public static final int BUTTON_Z = 11;
-	public static final int BUTTON_C = 12;
+	public static final int BUTTON_A             = 0;
+	public static final int BUTTON_B             = 1;
+	public static final int BUTTON_LEFT          = 2;
+	public static final int BUTTON_UP            = 3;
+	public static final int BUTTON_DOWN          = 4;
+	public static final int BUTTON_RIGHT         = 5;
+	public static final int BUTTON_HOME          = 6;
+	public static final int BUTTON_PLUS          = 7;
+	public static final int BUTTON_MINUS         = 8;
+	public static final int BUTTON_1             = 9;
+	public static final int BUTTON_2             = 10;
+	public static final int BUTTON_Z             = 11;
+	public static final int BUTTON_C             = 12;
+	public static final int BUTTON_BALANCE_POWER = 13;
 	
 	private OnButtonListener buttonListener = null;
+	
+	public void check(int button1){
+		power = checkButton( button1 == 8, power, BUTTON_BALANCE_POWER);
+	}
 	
 	public void check(String button1,String button2){
 		button1 = String.format("%5s", button1).replace(" ", "0");
@@ -89,9 +95,12 @@ public class WiimoteButton {
 		button1 = String.format("%5s", button1).replace(" ", "0");
 		button2 = String.format("%32s", button2).replace(" ", "0");
 		button2 = button2.substring(button2.length()-8);
+		
+//		System.out.println(button1 + "\t" +button2 + "\t" +button3 );
 
 		for(int i = 0;button1.length() > i;i++){
 			boolean btn = getCharactor(button1, i);
+//			System.out.println(btn);
 			
     		switch (i) {
 				case 0:
@@ -162,9 +171,11 @@ public class WiimoteButton {
 	private boolean checkButton(boolean btn,boolean flag,int id){
 		if(btn != flag){
 			if(btn)
-				buttonListener.onPushed(id);
+//				if(buttonListener != null)
+					buttonListener.onPushed(id);
 			else
-				buttonListener.onReleased(id);
+//				if(buttonListener != null)
+					buttonListener.onReleased(id);
 		}
 		return btn;
 	}

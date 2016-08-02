@@ -14,7 +14,6 @@ public class Device {
 		try {
 			mDev = PureJavaHidApi.openDevice(info.getPath());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -26,6 +25,11 @@ public class Device {
 	public void requestStatus(){
 		byte[] b = {0x15,0x00};
 		mDev.setOutputReport(b[0],b , b.length);
+	}
+	
+
+	public void disconnect(){
+//		mDev.setOutputReport(arg0, arg1, arg2);
 	}
 
 }

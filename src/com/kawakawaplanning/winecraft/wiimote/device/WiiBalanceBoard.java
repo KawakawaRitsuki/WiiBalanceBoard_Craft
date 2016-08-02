@@ -18,85 +18,25 @@ import purejavahidapi.PureJavaHidApi;
  * @since 0.1
  */
 
-class WiiBalanceBoard extends Device {
+public class WiiBalanceBoard extends Device {
 	
 	public WiiBalanceBoard(HidDeviceInfo info) {
 		super(info);
-		// TODO Auto-generated constructor stub
 	}
 
-	private HidDevice mDev;
-
-	
-	public boolean connect(int timeout){
-		if (mDev == null){
-			List<HidDeviceInfo> devList;
-			HidDeviceInfo devInfo = null;
-			System.out.println("Searching now...\nPlease push wiimote 1 & 2 button.");
-			
-			if(timeout == 0){
-				device: while(true){
-					devList = PureJavaHidApi.enumerateDevices();
-					for (HidDeviceInfo info : devList) {
-						if (info.getVendorId() == (short) 0x057E && info.getProductId() == (short) 0x0306) {
-							devInfo = info;
-							break device;
-						}
-					}
-					try { Thread.sleep(1000); } catch (InterruptedException e) {}
-				}
-			}else{
-				device: for(int i = 0;i < timeout;i++){
-					devList = PureJavaHidApi.enumerateDevices();
-					for (HidDeviceInfo info : devList) {
-						if (info.getVendorId() == (short) 0x057E && info.getProductId() == (short) 0x0306) {
-							devInfo = info;
-							break device;
-						}
-					}
-					try { Thread.sleep(1000); } catch (InterruptedException e) {}
-				}
-			}
-			
-			if (devInfo == null){
-				System.err.println("Wiimote not found.");
-				return false;
-			} else {
-				System.out.println("Found wiimote.");
-				try {
-					mDev = PureJavaHidApi.openDevice(devInfo.getPath());
-					System.out.println("Connected wiimote.");
-				} catch (IOException e) {
-					e.printStackTrace();
-					System.err.println("Not connected wiimote.");
-					return false;
-				}
-				return true;
-			}
-		}else{
-			System.err.println("Already connected.");
-			return true;
-		}
-	}
-	
 	public boolean isConnected(){
 		return mDev != null;
 	}
 	
-	
-	public void setPlayerID(String flag){
-		byte[] b = {0x11,(byte) Integer.parseInt(new StringBuilder(flag).reverse()+"0000",2)};
+	public void setPlayerID(boolean flag){
+		String data;
+		if(flag){
+			data = "1000";
+		}else{
+			data = "0000";
+		}
+		byte[] b = {0x11,(byte) Integer.parseInt(new StringBuilder(data).reverse()+"0000",2)};
 		mDev.setOutputReport(b[0],b , b.length);
-	}
-	
-	public void vibrate(long sec){
-		byte[] b = {0x11,(byte) Integer.parseInt("00010001",2)};
-		mDev.setOutputReport(b[0],b , b.length);
-		
-		try {Thread.sleep(sec);} catch (InterruptedException e) {}
-		
-		byte[] b2 = {0x11,(byte) Integer.parseInt("00010000",2)};
-		mDev.setOutputReport(b[0],b2 , b2.length);
 	}
 	
 	public final static byte WIMOTE_ONLY_REPORT_MODE = 0x30;
@@ -107,13 +47,6 @@ class WiiBalanceBoard extends Device {
 		mDev.setOutputReport(b[0],b , b.length);
 	}
 
-	public void setNunchuckData(){
-		byte[] b = {0x16,0x04,(byte) 0xA4,0x00,0x40,0x01,0x00,0x00,0x00,0x00,0x00,
-        0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
-        
-        mDev.setOutputReport(b[0],b , b.length);
-	}
-	
 	public void setDeviceRemovalListener(DeviceRemovalListener listener){
 		mDev.setDeviceRemovalListener(listener);
 	}
@@ -126,5 +59,6 @@ class WiiBalanceBoard extends Device {
 		byte[] b = {0x15,0x00};
 		mDev.setOutputReport(b[0],b , b.length);
 	}
+	
 	
 }
