@@ -8,7 +8,7 @@ public class CraftManager{
 
 	//リセットするメソッドがいる
 	//ボートで前進してる時にモードを変更した時など
-	//長時間動作でラグがまだ治ってない
+	//長時間動作でラグがまだ
 	
     Robot robot;
     Thread keyPressThread;
@@ -54,33 +54,29 @@ public class CraftManager{
     }
     
     public void back(){
-
-		robot.keyRelease(KeyEvent.VK_W);
-		robot.keyPress(KeyEvent.VK_S);
-		
+    	if(mode == CRAFT_MODE_BOAT){
+    		robot.keyRelease(KeyEvent.VK_W);
+			robot.keyPress(KeyEvent.VK_S);
+    	}
     }
     
     public void stopMove(){
     	if(mode == CRAFT_MODE_BOAT){
-
 			robot.keyRelease(KeyEvent.VK_S);
 	    	robot.keyRelease(KeyEvent.VK_W);
-    		
     	}
     }
     
     public void stop(){
-    	mode = CRAFT_MODE_NO;
+    	stopMove();
     	variableInit();
-		robot.keyRelease(KeyEvent.VK_S);
-		robot.keyRelease(KeyEvent.VK_W);
+    	mode = CRAFT_MODE_NO;
     }
 
     public void startStandard() {
-    	
     	mode = CRAFT_MODE_STANDARD;
-    	
         variableInit();
+        
         keyPressThread = new Thread() {
             public void run() {
                 while(mode == CRAFT_MODE_STANDARD){
@@ -112,12 +108,7 @@ public class CraftManager{
             public void run() {
                 while(mode == CRAFT_MODE_STANDARD){
                     if(BPM != 0 && (System.currentTimeMillis() - before) >= 1000 && before != 0){
-                        BPM = 0;
-                        count = 0;
-                        isFirst=true;
-                        before = 0;
-                        nowTime[0] = 0;
-                        nowTime[1] = 0;
+                        variableInit();
 
                         robot.keyRelease(KeyEvent.VK_W);
                         robot.delay(50);

@@ -30,7 +30,6 @@ public class Main {
 	// TODO: DisconnectedListener
 	// TODO: バランスボード切断
 	
-	
 	//モードごとの部分
 	//ヌンチャク、Wiimote　Balance
 
@@ -56,8 +55,9 @@ public class Main {
 
 	public static final int balanceDisconTime = 3000;
 
-	public static long current = 0;
-	public static long balanceDisconFlag = 0;
+	public static long currentBalance = 0;
+	public static long currentNunchuck = 0;
+    public static long balanceDisconFlag = 0;
 
 	public static ButtonManager bm;
 	public static WalkManager wm;
@@ -283,7 +283,8 @@ public class Main {
 		balance.setInputReportListener(new InputReportListener() {
 			@Override
 			public void onInputReport(HidDevice source, byte Id, byte[] b, int len) {
-				if ((System.currentTimeMillis() - current) >= 50) {
+				if ((System.currentTimeMillis() - currentBalance) >= 10) {
+					
 					bm.check(Byte.toUnsignedInt(b[2]));
 
 					rf = Byte.toUnsignedInt(b[3]);
@@ -300,7 +301,7 @@ public class Main {
 					if (status == STATUS_PLAYING)
 						wm.checkWalkStatus(right, left);
 
-					current = System.currentTimeMillis();
+					currentBalance = System.currentTimeMillis();
 				}
 			}
 		});
@@ -334,45 +335,50 @@ public class Main {
 					bm.check(data[1], data[2], data[8]);
 
 					if (status == STATUS_PLAYING) {
-						int axn = 0;
-						int ayn = 0;
-
-						byte nunchuckXX = (byte) ((b[3] ^ 0x17) + 0x17);
-						byte nunchuckYY = (byte) ((b[4] ^ 0x17) + 0x17);
-
-						if (nunchuckXX > 0x90)
-							axn = (nunchuckXX - 0x90) / 8;
-						if (nunchuckXX < 0x70)
-							axn = (nunchuckXX - 0x70) / 8;
 						if (nunchuckYY > 0x90)
-							ayn = (nunchuckYY - 0x90) / 8;
-						if (nunchuckYY < 0x70)
-							ayn = (nunchuckYY - 0x70) / 8;
-
-						if (axn < -10)
-							axn = 30 + axn;
-						if (ayn < -10)
-							ayn = 30 + ayn;
-						if (axn == 1 || axn == -1)
-							axn = 0;
-						if (ayn == 1 || ayn == -1)
-							ayn = 0;
-
-						Point mp = MouseInfo.getPointerInfo().getLocation();
-
-						if (displayHeight > (mp.y - ayn) && 0 < (mp.y - ayn) && displayWidth > (mp.x + axn)
-								&& 0 < (mp.x + axn) && (axn != 0 || ayn != 0))
-							mm.move(displayWidth, displayHeight, axn, ayn * -1);
-
-						if (mp.y < 15)
-							r.mouseMove(mp.x, displayHeight - 20);
-						else if (mp.y > displayHeight - 15)
-							r.mouseMove(mp.x, 20);
-
-						if (mp.x < 15)
-							r.mouseMove(displayWidth - 20, mp.y);
-						else if (mp.x > displayWidth - 15)
-							r.mouseMove(20, mp.y);
+						if ((System.currentTimeMillis() - currentNunchuck) >= 10) {
+							int axn = 0;
+							int ayn = 0;
+	
+							byte nunchuckXX = (byte) ((b[3] ^ 0x17) + 0x17);
+							byte nunchuckYY = (byte) ((b[4] ^ 0x17) + 0x17);
+	
+							if (nunchuckXX > 0x90)
+								axn = (nunchuckXX - 0x90) / 8;
+							if (nunchuckXX < 0x70)
+								axn = (nunchuckXX - 0x70) / 8;
+							if (nunchuckYY > 0x90)
+								ayn = (nunchuckYY - 0x90) / 8;
+							if (nunchuckYY < 0x70)
+								ayn = (nunchuckYY - 0x70) / 8;
+	
+							if (axn < -10)
+								axn = 30 + axn;
+							if (ayn < -10)
+								ayn = 30 + ayn;
+							if (axn == 1 || axn == -1)
+								axn = 0;
+							if (ayn == 1 || ayn == -1)
+								ayn = 0;
+	
+							Point mp = MouseInfo.getPointerInfo().getLocation();
+	
+							if (displayHeight > (mp.y - ayn) && 0 < (mp.y - ayn) && displayWidth > (mp.x + axn)
+									&& 0 < (mp.x + axn) && (axn != 0 || ayn != 0))
+								mm.move(displayWidth, displayHeight, axn, ayn * -1);
+	
+							if (mp.y < 15)
+								r.mouseMove(mp.x, displayHeight - 20);
+							else if (mp.y > displayHeight - 15)
+								r.mouseMove(mp.x, 20);
+	
+							if (mp.x < 15)
+								r.mouseMove(displayWidth - 20, mp.y);
+							else if (mp.x > displayWidth - 15)
+								r.mouseMove(20, mp.y);
+							
+							currentNunchuck = System.currentTimeMillis();
+						}
 					}
 
 				} else if (data[0].equals("110000")) { // ヌンチャク未接続時

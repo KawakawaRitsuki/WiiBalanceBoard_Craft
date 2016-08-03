@@ -46,7 +46,7 @@ public class DeviceConnector {
 				return false;
 			}
 			
-			device: for(int i = 0;i < timeout;i++){
+			device: for(int i = 0;timeout == 0 || i < timeout;i++){
 				devList = PureJavaHidApi.enumerateDevices();
 				for (HidDeviceInfo info : devList) {
 					if (info.getVendorId() == (short) 0x057E && info.getProductId() == (short) 0x0306) {
@@ -62,6 +62,8 @@ public class DeviceConnector {
 								device = WIIBALANCE_BOARD;
 								break device;
 							}
+						}else{
+							devInfo = null;
 						}
 					}
 				}

@@ -210,10 +210,10 @@ public class ButtonManager {
 	private boolean checkButton(boolean btn,boolean flag,int id){
 		if(btn != flag){
 			if(btn)
-				if(buttonListener != null)
+//				if(buttonListener != null)
 					buttonListener.onPushed(id);
 			else
-				if(buttonListener != null)
+//				if(buttonListener != null)
 					buttonListener.onReleased(id);
 		}
 		return btn;
