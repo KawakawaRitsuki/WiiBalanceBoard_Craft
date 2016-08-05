@@ -219,17 +219,10 @@ public class Main {
 					case ButtonManager.BUTTON_2:
 						if (status == STATUS_WAITING) {
 							status = STATUS_PLAYING;
-							switch (mode) {
-							case MODE_MINECRAFT_STANDARD:
-								cm.startStandard();
-								break;
-
-							case MODE_MINECRAFT_BOAT:
-								cm.startBoat();
-								break;
-							}
+							cm.start();
 						}else if (status == STATUS_PLAYING){
 							status = STATUS_WAITING;
+							cm.stop();
 						}
 						changePlayerLED();
 						break;
@@ -247,7 +240,7 @@ public class Main {
 				case WalkManager.BOARD_RIGHT:
 					switch (mode) {
 					case MODE_MINECRAFT_STANDARD:
-						cm.walk();
+						cm.updateBPM();
 						break;
 
 					case MODE_MINECRAFT_BOAT:
@@ -297,7 +290,7 @@ public class Main {
 
 					if (cabRf == 0 && cabRb == 0 && cabLf == 0 && cabLb == 0)
 						set0kg();
-
+					
 					if (status == STATUS_PLAYING)
 						wm.checkWalkStatus(right, left);
 
@@ -335,7 +328,6 @@ public class Main {
 					bm.check(data[1], data[2], data[8]);
 
 					if (status == STATUS_PLAYING) {
-						if (nunchuckYY > 0x90)
 						if ((System.currentTimeMillis() - currentNunchuck) >= 10) {
 							int axn = 0;
 							int ayn = 0;
@@ -426,6 +418,9 @@ public class Main {
 	}
 
 	public static void set0kg() {
+		balance.setPlayerID(false);
+		r.delay(500);
+		balance.setPlayerID(true);
 		cabRf = rf;
 		cabRb = rb;
 		cabLf = lf;
